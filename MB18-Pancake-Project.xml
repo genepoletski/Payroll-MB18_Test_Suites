@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="b2c33523-3ff8-4df9-b197-50c58f0e2787" created="2.5.0" activeEnvironment="Default environment" name="MB18-(4030)-ALESCO_PRE_PANCAKE-Project" resourceRoot="" updated="2.5.0 2018-09-14T14:45:07Z" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:testSuite id="3ace40d9-d306-43ac-b95b-a616a1104bf4" name="4030-10-PERSON_AL"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="cc90d9d2-91eb-4667-adb0-85b58bfd6a7c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 1 Csv matches _X tables" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="2c5e778f-036a-433f-b7ce-502f4b80b72a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select x.*, case when abs(rows_diff)+abs(hours_diff)=0 then 'Pass' end test_result from 
+(
+select 'MB18_PPM_2011_13_CS_X' file_name,
+count(*) rows_imported,  521303 expected_row_count,  521303 - count(*) rows_diff
+,sum (paid_hours) sum_paid_hours , 3019986.227 expected_sum_paid_hours ,round(sum (paid_hours)-3019986.227,0) hours_diff
+from MB18.MB18_PPM_2011_13_CS_X
+union all
+select 'MB18_PPM_2014_18_CS_X' file_name,
+count(*) rows_imported,   806559 expected_row_count,   806559 - count(*) rows_diff
+,sum (paid_hours) sum_paid_hours ,  4767271.274 expected_sum_paid_hours ,round(sum (paid_hours)-4767271.274,0) hours_diff
+from MB18.MB18_PPM_2014_18_CS_X
+union all
+select 'MB18_PPM_2011_13_No_X' file_name,
+count(*) rows_imported,   562172 expected_row_count,   562172 - count(*) rows_diff
+,sum (paid_hours) sum_paid_hours ,  3421947.4 expected_sum_paid_hours ,round(sum (paid_hours)-3421947.44,0) hours_diff
+from MB18.MB18_PPM_2011_13_No_X
+union all
+select 'MB18_PPM_2014_18_No_X' file_name,
+count(*) rows_imported,   865661 expected_row_count,   865661 - count(*) rows_diff
+,sum (paid_hours) sum_paid_hours ,  5324350.919 expected_sum_paid_hours ,round(sum (paid_hours)-5324350.919,0) hours_diff
+from MB18.MB18_PPM_2014_18_No_X
+)x</con:query><con:assertion type="GroovyScriptAssertion" id="8c29624e-5cd0-4888-9b48-3234923d48a7" name="Assert node [TEST_RESULT]"><con:configuration><scriptText>import com.eviware.soapui.support.XmlHolder
+
+def holder = new XmlHolder( messageExchange.responseContentAsXml )
+def results  = holder.getNodeValues("//TEST_RESULT")
+
+results.each { assert "${it}"  == 'Pass' }</scriptText></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="0357c9b1-42d7-4068-8e3e-52e93258d17a" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 2 Check emplids exist" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="09c07931-df97-4248-b7e1-8424014e6847"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from MB18.mb18_ppm_timesheets
+where trim(emplid) not in (select employee# from mb18_ods_alesco.employee union all select emplid from mb18_ods_peoplesoft.ps_personal_data)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="e93c5a49-acac-4188-9db0-d1233449ad66" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 3 Checking sum of X table matches mb18_ppm_timesheets incl cleaning;" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="862d39d6-861a-456c-bc62-8dda8483c2e7"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select ENTER_DATE, emplid,day_paid_hours  from MB18.mb18_ppm_timesheets 
+--where emplid='0804874'
+minus
+select ENTER_DATE, 
+case 
+when trim(EMPLOYEE_ID) ='Beaton' then '1005039' 
+when trim(EMPLOYEE_ID) ='4Johnstone' then '1007366' 
+when trim(EMPLOYEE_ID) ='FreddieOsborne1' then '1009489' 
+when trim(employee_id)='58644824' then '1003254'
+when trim(employee_id)='955423' then '1006393'
+when trim(employee_id)='805896' then '0805896'
+when trim(employee_id)='809982' then '0809982'
+when trim(employee_id)='814585' then '0814585'
+when trim(employee_id)='081950' then '0819590'
+when trim(employee_id)='820422' then '0820422'
+when trim(employee_id)='12345611' then '0823677'
+when trim(employee_id)='999999' then '0827264'
+when trim(employee_id)='829175' then '0829175'
+when trim(employee_id)='00830130' then '0830130'
+when trim(employee_id)='832902' then '0832902'
+when trim(employee_id)='0829623' then '0834237'
+when trim(employee_id)='0809752' then '0836093'
+when trim(employee_id)='00836404' then '0836404'
+when trim(employee_id)='100312' then '1000312'
+when trim(employee_id)='789981' then '1000333'
+when trim(employee_id)='100645' then '1000645'
+when trim(employee_id)='1001082' then '1001704'
+when trim(employee_id)='000000' then '1001752'
+when trim(employee_id)='12345' then '1002806'
+when trim(employee_id)='011111' then '1003472'
+when trim(employee_id)='0000012' then '1004733'
+when trim(employee_id)='562582' then '1005228'
+when trim(employee_id)='1111000' then '1006298'
+when trim(employee_id)='13789' then '1007453'
+when trim(employee_id)='100000000000' then '1008952'
+when trim(employee_id)='369852' then '1009301'
+when trim(employee_id)='147852' then '1009353'
+when trim(employee_id)='1324692' then '1009945'
+else  replace(trim(EMPLOYEE_ID),'.') end EMPLOYEE_ID
+,paid_hours
+from
+(select ENTER_DATE, employee_id,sum(paid_hours)  paid_hours from MB18.MB18_PPM_2011_13_CS_X  group by  ENTER_DATE, employee_id
+    union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2014_18_CS_X group by  ENTER_DATE, employee_id 
+        union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2011_13_No_X   group by  ENTER_DATE, employee_id
+            union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2014_18_No_X group by  ENTER_DATE, employee_id)
+where  trim(employee_id) not in ('1004387-1', 'FrancesN','Mar2012','2Mar19','Mar19'  ,'2Thompson', 'Nicole McDonnell' ,'BaeleiAckers1','041001','0000111','00000101','041000')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="c5041563-bd32-4f0a-bfa8-6cdf10d4451b" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 4 ALESCO_PPM_DAYS_PAID_CLEAN summary is right" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="24fcf31d-45a4-42e1-b20f-983febcdcd7c"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select emplid, expected_week_end, count(*) from
+(select emplid, enter_date, next_day(enter_date,'SUNDAY')-1 expected_week_end from  (select distinct emplid, enter_date from MB18.MB18_PPM_TIMESHEETS where day_paid_hours>0))
+--where emplid='0801507'   --and enter_Date between '10-jul-2011' and '16-jul-2011'
+group by emplid, expected_week_end
+
+minus
+
+select emplid,  EXPECTED_END_DATE, PPM_DAYS_PAID
+from MB18.ALESCO_PPM_DAYS_PAID_CLEAN_RW</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:savedRecentRuns>1</con:savedRecentRuns><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:jmsConnectionContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest"><con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+// This code is often used for adding custom authentication to SoapUI Pro tests
+
+// If hardcoding the token, uncomment and change line 5
+// def token = '4567'
+
+// If your token is parameterized in Project level custom property, uncomment line 8
+// def token = request.parent.testCase.testSuite.project.getProperty('auth_token').getValue()
+
+// To modify all outgoing calls, remove comments from lines 11 to 16
+// def headers = request.requestHeaders
+// if (headers.containsKey('auth_token2') == false) {
+//   headers.put('auth_token2', token)
+//   request.requestHeaders = headers
+// }</con:script></con:eventHandlers><con:eventHandlers type="TestRunListener.afterStep" name="TestRunListener.afterStep"><con:script>// Save all test step results into files
+// Change the directory path in line 5 to a location where you want to store details
+// then uncomment lines 5 to 10
+
+// filePath = 'C:\\tempOutputDirectory\\'
+// fos = new FileOutputStream(filePath + testStepResult.testStep.label + '.txt', true)
+// pw = new PrintWriter(fos)
+// testStepResult.writeTo(pw)
+// pw.close()
+// fos.close()</con:script></con:eventHandlers><con:authRepository/><con:tags/></con:soapui-project>
