@@ -1,85 +1,403 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="b2c33523-3ff8-4df9-b197-50c58f0e2787" created="2.5.0" activeEnvironment="Default environment" name="MB18-(4030)-ALESCO_PRE_PANCAKE-Project" resourceRoot="" updated="2.5.0 2018-09-14T14:45:07Z" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:testSuite id="3ace40d9-d306-43ac-b95b-a616a1104bf4" name="4030-10-PERSON_AL"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="cc90d9d2-91eb-4667-adb0-85b58bfd6a7c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 1 Csv matches _X tables" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="2c5e778f-036a-433f-b7ce-502f4b80b72a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select x.*, case when abs(rows_diff)+abs(hours_diff)=0 then 'Pass' end test_result from 
-(
-select 'MB18_PPM_2011_13_CS_X' file_name,
-count(*) rows_imported,  521303 expected_row_count,  521303 - count(*) rows_diff
-,sum (paid_hours) sum_paid_hours , 3019986.227 expected_sum_paid_hours ,round(sum (paid_hours)-3019986.227,0) hours_diff
-from MB18.MB18_PPM_2011_13_CS_X
-union all
-select 'MB18_PPM_2014_18_CS_X' file_name,
-count(*) rows_imported,   806559 expected_row_count,   806559 - count(*) rows_diff
-,sum (paid_hours) sum_paid_hours ,  4767271.274 expected_sum_paid_hours ,round(sum (paid_hours)-4767271.274,0) hours_diff
-from MB18.MB18_PPM_2014_18_CS_X
-union all
-select 'MB18_PPM_2011_13_No_X' file_name,
-count(*) rows_imported,   562172 expected_row_count,   562172 - count(*) rows_diff
-,sum (paid_hours) sum_paid_hours ,  3421947.4 expected_sum_paid_hours ,round(sum (paid_hours)-3421947.44,0) hours_diff
-from MB18.MB18_PPM_2011_13_No_X
-union all
-select 'MB18_PPM_2014_18_No_X' file_name,
-count(*) rows_imported,   865661 expected_row_count,   865661 - count(*) rows_diff
-,sum (paid_hours) sum_paid_hours ,  5324350.919 expected_sum_paid_hours ,round(sum (paid_hours)-5324350.919,0) hours_diff
-from MB18.MB18_PPM_2014_18_No_X
-)x</con:query><con:assertion type="GroovyScriptAssertion" id="8c29624e-5cd0-4888-9b48-3234923d48a7" name="Assert node [TEST_RESULT]"><con:configuration><scriptText>import com.eviware.soapui.support.XmlHolder
+<con:soapui-project id="b2c33523-3ff8-4df9-b197-50c58f0e2787" created="2.5.0" activeEnvironment="Default environment" name="MB18-(4030)-ALESCO_PRE_PANCAKE-Project" resourceRoot="" updated="2.5.0 2018-09-14T14:45:07Z" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:testSuite id="3ace40d9-d306-43ac-b95b-a616a1104bf4" name="4030-10-PERSON_AL"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="cc90d9d2-91eb-4667-adb0-85b58bfd6a7c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 1 all rows there with null bank account for RIP emps" searchProperties="true" timeout="0"><con:description>(no rows = pass);</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="2c5e778f-036a-433f-b7ce-502f4b80b72a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT a.emplid, orig_emplid, surname, first_names, preferred_name,
+       date_of_birth, mobile_phone, gender, title, ird_number, hire_date,
+       termination_date, termination_reason_desc,
+       CASE
+          WHEN b.emplid IS NOT NULL
+             THEN NULL
+          ELSE bank_account
+       END AS bank_account, bank_account_name, subtract_overpayment,
+       status_latest, status_updated_on, home_phone, other_phone,
+       person_notes, include_claimant, emp_reference
+  FROM mb18.alesco_person_clean a LEFT OUTER JOIN mb18.emp_rip_paygp_tbl b
+       ON a.emplid = b.emplid
+MINUS
+SELECT emplid, orig_emplid, surname, first_names, preferred_name,
+       date_of_birth, mobile_phone, gender, title, ird_number, hire_date,
+       termination_date, termination_reason_desc, bank_account,
+       bank_account_name, subtract_overpayment, status_latest,
+       status_updated_on, home_phone, other_phone, person_notes,
+       include_claimant, emp_reference
+  FROM mb18.person_al</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="08b775dd-069a-494a-8bd4-06cd3324ea9e"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite id="644a7418-d728-4e98-b934-31cf5a7cc69e" name="4030-20-TIMESHEETS_AL"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="0297de44-71c5-49ad-bef1-e6c272a08312" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST1 totals match" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="dbe71ed1-594e-461e-bf46-6ab96e37c393"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with a as
+(select emplid,  workdate, paycode, sum (hours) act_hpd_hours from mb18.alesco_actual_hpd_clean group by emplid,  workdate, paycode)
+,b as (select emplid,  workdate, work_type paycode, sum (actual_net_hours) actual_ts_al from mb18.TIMESHEETS_AL group by emplid,  workdate, work_type) 
+select a.*, b.actual_ts_al
+from a,b
+where a.emplid=b.emplid(+)  and a.workdate=b.workdate(+) and a.paycode=b.paycode(+)
+and act_hpd_hours &lt;> nvl(actual_ts_al,0)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 2" id="f1c6c55a-86d1-49e7-9473-f41e2d72e919"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from mb18.alesco_actual_hpd_clean
+where emplid='059653' and workdate='28/apr/2011'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="d8bdd7d6-269d-430e-801f-704c05cb051d"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 3" id="33a116dc-8f8b-43c6-b519-a50a762b6c2f"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from mb18.TIMESHEETS_AL 
+where emplid='059653' and workdate='28/apr/2011'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="ddfda588-355b-4a70-851b-49ebeae406d4"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="81359cde-4812-42bb-ac3c-d45649b19a64" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST2 rostered hours" searchProperties="true" timeout="0"><con:description>source=ALESCO_ROSTERED_HPD_CLEAN</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="48cbc2ac-344f-4cc7-a7ce-9cc4e6d550dc"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.*, b.HOURS_PER_DAY from
+ 
+ (select emplid, workdate, ROSTERED_NET_HOURS from mb18.timesheets_al)a
 
-def holder = new XmlHolder( messageExchange.responseContentAsXml )
-def results  = holder.getNodeValues("//TEST_RESULT")
+,(select emplid, workdate, casual_roster_yn, sum(HOURS_PER_DAY) HOURS_PER_DAY from mb18.ALESCO_ROSTERED_HPD_CLEAN group by emplid, workdate,casual_roster_yn) b
 
-results.each { assert "${it}"  == 'Pass' }</scriptText></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="0357c9b1-42d7-4068-8e3e-52e93258d17a" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 2 Check emplids exist" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="09c07931-df97-4248-b7e1-8424014e6847"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from MB18.mb18_ppm_timesheets
-where trim(emplid) not in (select employee# from mb18_ods_alesco.employee union all select emplid from mb18_ods_peoplesoft.ps_personal_data)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="e93c5a49-acac-4188-9db0-d1233449ad66" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 3 Checking sum of X table matches mb18_ppm_timesheets incl cleaning;" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="862d39d6-861a-456c-bc62-8dda8483c2e7"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select ENTER_DATE, emplid,day_paid_hours  from MB18.mb18_ppm_timesheets 
---where emplid='0804874'
-minus
-select ENTER_DATE, 
-case 
-when trim(EMPLOYEE_ID) ='Beaton' then '1005039' 
-when trim(EMPLOYEE_ID) ='4Johnstone' then '1007366' 
-when trim(EMPLOYEE_ID) ='FreddieOsborne1' then '1009489' 
-when trim(employee_id)='58644824' then '1003254'
-when trim(employee_id)='955423' then '1006393'
-when trim(employee_id)='805896' then '0805896'
-when trim(employee_id)='809982' then '0809982'
-when trim(employee_id)='814585' then '0814585'
-when trim(employee_id)='081950' then '0819590'
-when trim(employee_id)='820422' then '0820422'
-when trim(employee_id)='12345611' then '0823677'
-when trim(employee_id)='999999' then '0827264'
-when trim(employee_id)='829175' then '0829175'
-when trim(employee_id)='00830130' then '0830130'
-when trim(employee_id)='832902' then '0832902'
-when trim(employee_id)='0829623' then '0834237'
-when trim(employee_id)='0809752' then '0836093'
-when trim(employee_id)='00836404' then '0836404'
-when trim(employee_id)='100312' then '1000312'
-when trim(employee_id)='789981' then '1000333'
-when trim(employee_id)='100645' then '1000645'
-when trim(employee_id)='1001082' then '1001704'
-when trim(employee_id)='000000' then '1001752'
-when trim(employee_id)='12345' then '1002806'
-when trim(employee_id)='011111' then '1003472'
-when trim(employee_id)='0000012' then '1004733'
-when trim(employee_id)='562582' then '1005228'
-when trim(employee_id)='1111000' then '1006298'
-when trim(employee_id)='13789' then '1007453'
-when trim(employee_id)='100000000000' then '1008952'
-when trim(employee_id)='369852' then '1009301'
-when trim(employee_id)='147852' then '1009353'
-when trim(employee_id)='1324692' then '1009945'
-else  replace(trim(EMPLOYEE_ID),'.') end EMPLOYEE_ID
-,paid_hours
+,(select emplid, workdate, min (casual_roster_yn) casual_roster_yn from
+(select emplid,  workdate, casual_roster_yn, count(*) from mb18.ALESCO_ROSTERED_HPD_CLEAN a group by emplid, casual_roster_yn, workdate)
+group by emplid, workdate) c
+
+where a.emplid=b.emplid and a.workdate=b.workdate and a.ROSTERED_NET_HOURS &lt;> b.HOURS_PER_DAY
+
+and b.emplid=c.emplid and b.workdate=c.workdate and b.casual_roster_yn=c.casual_roster_yn</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="e646a61b-7a26-4e3a-bcb3-51dc7774f0fc" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST3 PPM only" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="f47b9534-5a67-4295-88d4-0369ee78959a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with
+a as (select emplid,expected_pay_end_date, expected_pay_end_date-6 workdate, ppm_days_paid from mb18.alesco_actual_hpd_clean where job_no='PP') 
+,b as (select emplid, workdate, days_paid from mb18.timesheets_al where rdp_source='ALESCO_PPM_DAYS_PAID_CLEAN')
+,c as (select emplid, min (effdt_start) min_start from mb18.employment_history_pre_stg group by emplid) 
+select a.*,b.*, c.*, min_start-expected_pay_end_date from a,b,c
+where
+a.emplid=c.emplid 
+and a.emplid=b.emplid(+) and a.workdate=b.workdate(+) 
+and a.ppm_days_paid&lt;> nvl (b.days_paid,0)
+and min_start-expected_pay_end_date&lt;7 and  min_start-expected_pay_end_date>0</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 2" id="b60a9576-bebc-400e-ac38-86c89664bab6"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a as (select emplid, workdate, days_paid from mb18.timesheets_al where rdp_source='ALESCO_PPM_DAYS_PAID_CLEAN') 
+,b as (select emplid, workdate, expected_pay_end_date, ppm_days_paid from mb18.alesco_actual_hpd_clean where job_no='PP') 
+,c as (select emplid, min (effdt_start) min_start from mb18.employment_history_pre_stg group by emplid)
+select a.*,b.*, c.*,c.min_start-a.workdate from a,b,c
+where a.emplid=b.emplid(+) and a.workdate=b.workdate(+) and a.days_paid&lt;> nvl (b.ppm_days_paid,0)
+and a.emplid=c.emplid 
+and min_start&lt;>a.workdate
+and c.min_start-a.workdate&lt;7
+and c.min_start-a.workdate>0</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="729c8fb4-2866-46ca-9e0e-0b305d0e4046" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 4 sum_hours_day is right" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="856c27b1-9435-462d-80da-ec5d8e907a06"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.*, b.sum_hours_day_actual
 from
-(select ENTER_DATE, employee_id,sum(paid_hours)  paid_hours from MB18.MB18_PPM_2011_13_CS_X  group by  ENTER_DATE, employee_id
-    union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2014_18_CS_X group by  ENTER_DATE, employee_id 
-        union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2011_13_No_X   group by  ENTER_DATE, employee_id
-            union all select ENTER_DATE, employee_id,sum(paid_hours) paid_hours from MB18.MB18_PPM_2014_18_No_X group by  ENTER_DATE, employee_id)
-where  trim(employee_id) not in ('1004387-1', 'FrancesN','Mar2012','2Mar19','Mar19'  ,'2Thompson', 'Nicole McDonnell' ,'BaeleiAckers1','041001','0000111','00000101','041000')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="c5041563-bd32-4f0a-bfa8-6cdf10d4451b" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 4 ALESCO_PPM_DAYS_PAID_CLEAN summary is right" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="24fcf31d-45a4-42e1-b20f-983febcdcd7c"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select emplid, expected_week_end, count(*) from
-(select emplid, enter_date, next_day(enter_date,'SUNDAY')-1 expected_week_end from  (select distinct emplid, enter_date from MB18.MB18_PPM_TIMESHEETS where day_paid_hours>0))
---where emplid='0801507'   --and enter_Date between '10-jul-2011' and '16-jul-2011'
-group by emplid, expected_week_end
+(select emplid, workdate, sum (actual_net_hours) sum_hours_day_expected from mb18.timesheets_al group by emplid, workdate) a
+,(select emplid, workdate, sum_hours_day sum_hours_day_actual from mb18.timesheets_al) b
+where a.emplid=b.emplid(+) and a.workdate=b.workdate(+) and sum_hours_day_expected&lt;> nvl(sum_hours_day_actual,0) </con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="c57227c9-cbd2-4d09-8a75-98c318e4cdba" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Test 5 day_paid formula" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="d4b54200-a010-4c36-98d5-0049ef3a71db"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query><![CDATA[with
+a as (select a.emplid, workdate, days_paid,sum_hours_day,  a.rostered_net_hours, a.work_type
+,case 
+    when abs(sum_hours_day) <2 and rostered_net_hours>0 then -- A 
+        case 
+            when sum_hours_day=0 then 0     -- A1 
+            when abs(sum_hours_day) >0 and abs(sum_hours_day)<1 then 0 -- A2 
+            when abs(sum_hours_day) >=1 and abs(sum_hours_day)<2 and rostered_net_hours >=1 then 1 -- A3 
+            when abs(sum_hours_day) > =1 and abs(sum_hours_day) < 2 and rostered_net_hours <1 then 0-- A4 
+             
+        end
+    when abs(sum_hours_day) <2  and rostered_net_hours=0 then -- B 
+        case 
+            when sum_hours_day =0 then 0 -- B1 
+            when sum_hours_day> 0 and sum_hours_day <1 then 0 -- B2 
+            when sum_hours_day> 1 and sum_hours_day <2 then 0 -- B3 
+        end
+    when  abs(sum_hours_day)>=2  and rostered_net_hours>0 then -- C 
+        case
+            when abs(sum_hours_day)>=2 and abs(sum_hours_day)<=12 then 1 -- C1 
+            when abs(sum_hours_day)>=2 then 999 --  C2 Days Paid Formula 
+        end
+    when  abs(sum_hours_day)>=2 and rostered_net_hours=0 then 999 -- D1 Days Paid Formula  
+    
+    else 777 -- should not have any here, if all circumstances covered above, check this! 
+end non_dp_formula_expected
+from mb18.timesheets_al a
+--from mb18.temp_mc a
+where rdp_source<>'ALESCO_PPM_DAYS_PAID_CLEAN' 
+--and a.emplid='0809317' and a.workdate between '20-dec-2011' and '7-jan-2012'
 
-minus
+)
 
-select emplid,  EXPECTED_END_DATE, PPM_DAYS_PAID
-from MB18.ALESCO_PPM_DAYS_PAID_CLEAN_RW</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:savedRecentRuns>1</con:savedRecentRuns><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:jmsConnectionContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest"><con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+,x as (select a.emplid, a.workdate, 
+a.actual_hpd_hours, b.roster_tot_hours, a.casual_roster_yn,--, b.avg_daily_hours, 
+round(actual_hpd_hours/b.roster_tot_hours,0) dpformula_expected_raw
+from 
+ (select emplid, workdate, min(casual_roster_yn) casual_roster_yn, sum (nvl(hours,0)) actual_hpd_hours from mb18.alesco_actual_hpd_clean where ppm_days_paid is null
+--     and emplid='0830994' and workdate='1/aug/2013'
+ group by emplid, workdate
+  ) a
+ 
+,(select emplid, workdate,  sum (avg_daily_hours) roster_tot_hours 
+from mb18.alesco_rostered_hpd_clean where 
+     casual_roster_yn='N' 
+--and emplid='0809317' and workdate between '20-dec-2011' and '7-jan-2012'
+group by emplid, workdate
+) b
+where 1=1 and a.emplid=b.emplid  and a.workdate=b.workdate
+
+)
+
+
+select a.emplid, a.workdate, a.work_type, a.rostered_net_hours,  a.sum_hours_day, x.casual_roster_yn
+,x.dpformula_expected_raw ,a.non_dp_formula_expected
+
+,case when non_dp_formula_expected = 999 then x.dpformula_expected_raw else a.non_dp_formula_expected end expected_days_paid
+
+,roster_tot_hours
+,a.days_paid
+
+ from 
+ a,
+ x
+
+
+where a.emplid=x.emplid(+) and a.workdate=x.workdate(+)
+
+and case when non_dp_formula_expected = 999 then round(x.dpformula_expected_raw,0) else a.non_dp_formula_expected end <> nvl(days_paid,9999)]]></con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="bfbd327c-ae86-470b-b59f-8ddd22a5c027" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST6 days paid nulls" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="8da222a4-db18-4245-9ccd-6fa1ce7c664a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from mb18.timesheets_al where days_paid is null</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="0c383228-a648-41fa-8d97-dc1589d4b733" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 7 timesheets are within an occupancy" searchProperties="true" timeout="0"><con:description> (tidy up PPM dates for first pay begin before hire dt)</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="7b3cf580-56b8-4b91-b1b5-725fd964c691"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select  a.emplid, a.workdate, a.work_type,b.first_emp_hist, b.first_emp_hist-a.workdate
+from mb18.timesheets_al a,
+(select  emplid, min (effdt_start) first_emp_hist from mb18.alesco_occupancy_clean group by emplid) b  where 
+a.emplid=b.emplid
+and a.workdate>='01-apr-2004'
+
+and workdate&lt; first_emp_hist
+and b.first_emp_hist-a.workdate&lt;=7</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="e01579ae-e938-40d8-a1ab-724351b26667" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 8 ms_cea" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="4c827737-5a35-4fa6-a486-67e8a8eb3671"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.emplid, b.classification,  a.ms_cea ms_cea_from_ts, c.grade, c.ms_cea  ms_cea_from_mappings  
+from mb18.TIMESHEETS_AL a, mb18.alesco_occupancy_clean b, mb18.hr_fte_grade_mappings c
+where a.emplid=b.emplid  and a.workdate between effdt_start and effdt_end and b.classification=C.grade
+and a.ms_cea&lt;>c.ms_cea</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite id="0cfb1106-c256-4b89-9cd6-9e5a92bc6933" name="4030-30-PAYSLIPS_AL"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="6f3b68f6-7567-40cf-9c4b-e8346fc09811" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TEST 1 - Primary Key" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description> No rows = Pass for first test case</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Primary Keys" id="b727cfc0-9b99-4e61-a418-01bc5561f725"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT
+emplid,job_no,company,paygroup,period_end_date,paycode,start_date,end_date,abs_pay_link,date_attributed,rdp_source,count(*)
+FROM
+mb18.payslips_al
+GROUP BY emplid,job_no,company,paygroup,period_end_date,paycode,start_date,end_date,abs_pay_link,date_attributed, rdp_source
+HAVING count(*) > 1</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="1a totals per keys match" id="5c3534e2-5011-4ee6-91c5-f4dd06272b80"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a as (
+SELECT emplid,job_no,company,paygroup,period_end_date,x.paycode,sum(duration_hours) units_source, 
+sum (case 
+when y.pays_alongside in ('D','P') then amt
+when y.pays_alongside not in ('D','P') then  case when amt_paid is null then amt else amt_paid end end     
+) amt_source
+
+from mb18.alesco_payslips_absences_clean x, mb18.paycodes_tbl y
+where 1=1 
+and x.paycode=y.paycode and y.source='ALESCO'
+group by emplid,job_no,company,paygroup,period_end_date,x.paycode
+)
+,b as (
+SELECT emplid,job_no,company,paygroup,period_end_date,paycode,sum(total_units) units_dest, sum (totaldollars) amt_dest
+from mb18.payslips_al
+--where emplid='0831371'
+group by emplid,job_no,company,paygroup,period_end_date,paycode
+)
+
+select a.*, b.units_dest, b.amt_dest
+from a,b
+WHERE
+a.emplid = b.emplid (+)
+AND a.job_no = b.job_no (+)
+AND a.company = b.company (+)
+AND a.paygroup = b.paygroup (+)
+AND a.period_end_date = b.period_end_date (+)
+AND a.paycode = b.paycode (+)
+and (round(abs(units_source-nvl(units_dest,0)),2)>0.1 or round(abs(amt_source-nvl(amt_dest,0)),2)>0.02)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="1b RTADJ paycode per empid and job_no should total zero" id="01bf03f5-540f-4ee5-9f41-bcafb0ac6082"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a as (
+SELECT emplid,job_no,company,paygroup,period_end_date,x.paycode,sum(duration_hours) units_source, 
+sum (case 
+when y.pays_alongside in ('D','P') then amt
+when y.pays_alongside not in ('D','P') then  case when amt_paid is null then amt else amt_paid end end     
+) amt_source
+
+from mb18.alesco_payslips_absences_clean x, mb18.paycodes_tbl y
+where 1=1 
+and x.paycode=y.paycode and y.source='ALESCO'
+group by emplid,job_no,company,paygroup,period_end_date,x.paycode
+)
+,b as (
+SELECT emplid,job_no,company,paygroup,period_end_date,paycode,sum(total_units) units_dest, sum (totaldollars) amt_dest
+from mb18.payslips_al
+--where emplid='0831371'
+group by emplid,job_no,company,paygroup,period_end_date,paycode
+)
+
+select a.*, b.units_dest, b.amt_dest
+from a,b
+WHERE
+a.emplid = b.emplid (+)
+AND a.job_no = b.job_no (+)
+AND a.company = b.company (+)
+AND a.paygroup = b.paygroup (+)
+AND a.period_end_date = b.period_end_date (+)
+AND a.paycode = b.paycode (+)
+and (round(abs(units_source-nvl(units_dest,0)),2)>0.1 or round(abs(amt_source-nvl(amt_dest,0)),2)>0.02)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="c1bc91ae-a9fb-4126-9cdb-273671ef037c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 2 - PayCodes in PAYCODES_TBL" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="5d77a6f8-c1de-49e3-8e1c-00805d316a3c"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT * FROM mb18.payslips_al WHERE paycode NOT IN (SELECT distinct paycode FROM mb18.paycodes_tbl where source='ALESCO')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="cb5c857d-f17e-4ce7-b517-20cdaf3524df" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 3 - Period Start Date always before Period End Date" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="5561b566-c1e9-4c3e-a4ec-4d8f81f66526"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT *FROM mb18.payslips_al WHERE period_start_date > period_end_date</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="e8ba4d4a-939b-4a73-8b60-501b40273b9f" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 4-Date_Attributed calculation: Pays Alongside without Date_Attributed" searchProperties="true" timeout="0"><con:description>(no rows = pass);</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="ec68fdeb-ae77-499d-bcb8-76bf2f2c681f"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT * FROM
+mb18.payslips_al
+WHERE
+paycode IN (SELECT paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' and pays_alongside IN ('P','D'))
+AND rdp_source IN ('PAYS_ALONGSIDE TYPE D','PAYS_ALONGSIDE TYPE D MATCHED LIKE P','PAYS_ALONGSIDE TYPE P')
+AND date_attributed IS NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="39ad5134-bae0-479d-8b1b-36d7911ba6fd" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 5 - Date_Attributed calculation" searchProperties="true" timeout="0"><con:description>No Pays Alongside with Date_Attributed; zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="50331124-0d06-499b-8046-53b0068d2b26"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT *
+FROM
+mb18.payslips_al
+WHERE
+paycode NOT IN (SELECT paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' and pays_alongside IN ('P','D'))
+AND date_attributed IS NOT NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="0c2a2113-c09d-4f7c-8ce0-807aabe97dde" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 6 - RDP_SOURCE Calculation" searchProperties="true" timeout="0"><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="f5caecef-61bc-4637-af3f-45f9b0e3b77c"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT * FROM mb18.payslips_al WHERE rdp_source IN ('PAYS_ALONGSIDE TYPE D','PAYS_ALONGSIDE TYPE D MATCHED LIKE P') AND paycode NOT IN (SELECT distinct paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' AND pays_alongside = 'D')
+UNION ALL
+SELECT * FROM mb18.payslips_al WHERE rdp_source IN ('PAYS_ALONGSIDE TYPE P NON-CASUAL','PAYS_ALONGSIDE TYPE P CASUAL NORMAL','PAYS_ALONGSIDE TYPE P CASUAL RETRO') AND paycode NOT IN (SELECT distinct paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' AND pays_alongside = 'P')
+UNION ALL
+SELECT * FROM mb18.payslips_al WHERE rdp_source = 'UNMATCHED TYPE D OR P - SPLIT 5 OR 10' AND paycode IN (SELECT distinct paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' AND pays_alongside = 'N')
+UNION ALL
+SELECT * FROM mb18.payslips_al WHERE rdp_source = 'PAYS_ALONGSIDE NOT TYPE D OR P' AND paycode NOT IN (SELECT distinct paycode FROM mb18.paycodes_tbl WHERE source = 'ALESCO' AND pays_alongside = 'N') AND abs(total_units) > 0.08 AND abs(totaldollars) > 0.08
+UNION ALL
+SELECT * FROM mb18.payslips_al WHERE rdp_source IN ('UNMATCHED TYPE D OR P - SPLIT 5 OR 10','PAYS_ALONGSIDE NOT TYPE D OR P') AND date_attributed IS NOT NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="7efd9266-7420-4292-99b3-2551aad185f5" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 9c Paysalongside D" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="eb701867-3aaa-4d2e-8262-14c8cce156a5"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a  as
+(select 
+emplid, job_no,  a.paycode, period_end_Date , end_date source_date_attributed, AMT_PAID, amt 
+, sum(round(nvl(AMT_PAID,AMT),2)) source_amt
+from  mb18.alesco_payslips_absences_clean a, mb18.paycodes_tbl b 
+where a.paycode=b.paycode and b.pays_alongside='D' --and retro_ind='N'
+and abs(amt)>0.08
+group by
+emplid, job_no,  a.paycode, end_date , AMT_PAID, amt,period_end_Date
+)
+,b as (
+select 
+emplid, job_no,  period_end_Date, paycode, date_attributed dest_date_attributed, round(sum(totaldollars),2) dest_amt
+ from mb18.payslips_al where 1=1 
+-- and emplid= '0819615' and job_no='01'  and period_end_Date= '30/mar/2013' and paycode='MBT10' and date_attributed='27/mar/2013'
+and end_date between period_start_date and period_end_Date
+group by emplid, job_no,  date_attributed,paycode, period_end_Date)
+
+select a.*, b.dest_amt
+from a,b
+where a.emplid=b.emplid(+) and  a.job_no=b.job_no(+) and a.paycode=b.paycode(+) and a.period_end_Date=b.period_end_Date and a.source_date_attributed=dest_date_attributed(+)
+and abs(nvl(source_amt,0)-nvl(dest_amt,0))>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="c75f5fe5-20f4-4228-8e99-263f9b4700a7" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TEST 9e Payslaongside P non-casual" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="ee0de74f-8b33-47a0-928e-99360fa1fe62"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a  as
+(select 
+a2.emplid, a2.job_no,  a2.paycode--, expected_ppe
+,c2.workdate date_attributed, c2.hours_per_day, c2.hours_per_week
+,round(sum(a2.amt2 * (c2.hours_per_day_tot/ c2.hours_per_week)),2) expected_amt 
+from  
+ (
+ select a3.emplid, a3.job_no, a3.paycode, case when  a3.end_date between a3.period_start_Date and a3.period_end_Date then a3.period_end_Date else end_date end expected_ppe,
+    sum(nvl(a3.AMT_PAID,a3.AMT)) amt2
+    --, sum (nvl(a3.AMT_PAID,a3.AMT)) over (partition by a3.emplid, a3.job_no, a3.paycode, a3.period_end_Date) amt2 
+    from mb18.alesco_payslips_absences_clean a3 ,mb18.alesco_occupancy_clean aco
+    where  abs(amt)>0.03 
+    and aco.casual_ind='N'
+    --and  a3.emplid='0831727' and a3.paycode='WETAL' --and case when  a3.end_date between a3.period_start_Date and a3.period_end_Date then a3.period_end_Date else end_date end='20/jan/2014'
+        and a3.emplid=aco.emplid and a3.job_no=aco.job_no and a3.end_Date between aco.effdt_start and aco.extended_effdt_end    
+    group by a3.emplid, a3.job_no, a3.paycode, case when  a3.end_date between a3.period_start_Date and a3.period_end_Date then a3.period_end_Date else end_date end
+  
+    ) a2
+,(select * from  mb18.paycodes_tbl where pays_alongside='P' and source='ALESCO') b2 
+    
+    ,(select emplid, job_no, expected_pay_end_Date,  workdate,  hours_per_day 
+    ,sum(hours_per_day) over (partition by emplid, job_no,  expected_pay_end_Date) hours_per_week
+    ,sum(hours_per_day) over (partition by emplid, job_no,  workdate) hours_per_day_tot 
+    from 
+    mb18.ALESCO_rostered_hpd_clean where hours_per_day&lt;>0 and casual_roster_yn='N'
+    ) c2
+
+where a2.paycode=b2.paycode  
+and a2.emplid=c2.emplid(+) and a2.job_no=c2.job_no(+)  and a2.expected_ppe=c2.EXPECTED_PAY_END_DATE(+)
+
+and c2.hours_per_week&lt;>0
+group by
+a2.emplid, a2.job_no,  a2.paycode, a2.expected_ppe,c2.workdate , c2.hours_per_day, c2.hours_per_week
+)
+,b as
+(select p2.emplid, p2.job_no,  p2.paycode, p2.date_attributed , round(sum (p2.totaldollars),2) dest_amt
+from mb18.payslips_al p2, mb18.paycodes_tbl q2 
+where q2.pays_alongside='P' and q2.source='ALESCO' and p2.paycode=q2.paycode
+--and p2.emplid= '0831727'  and p2.paycode='WETAL' and p2.date_attributed='25/jan/2014'
+group by  p2.emplid, p2.job_no,  p2.paycode,  p2.date_attributed
+)
+
+select a.*, b.dest_amt
+from a,b
+where a.emplid=b.emplid(+) and  a.job_no=b.job_no(+) and a.paycode=b.paycode(+) and a.date_attributed=b.date_attributed(+) 
+and abs(a.expected_amt-nvl(dest_amt,0))>0.20</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 2" id="a935c6c6-72b0-4f2b-91a4-8e11c569acab"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.rdp_ods_alesco.pehistpay_raw where employee#= '0831727'  and paycode='GOLDH'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 3" id="13b4fd63-afec-46f8-b7ca-7db3ba2b0a0a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.alesco_payslips_clean where emplid= '0831727'  and paycode='GOLDH' 
+and case when  end_date between period_start_Date and period_end_Date then period_end_Date else end_date end ='25/jan/2014'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 4" id="4325c01d-699b-4be3-b4a0-8c7eb4f8ce5c"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.alesco_payslips_absences_clean where emplid= '0831727'  and paycode='WETAL' and period_end_Date='25/jan/2014'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 5" id="d01c2858-0c04-4d28-b315-6ade66e23793"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.payslips_al a where emplid= '0831727'  and paycode='WETAL' and date_attributed='25/jan/2014'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="366ce76e-c4ec-400b-97e3-9c6eb09c650d" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TEST 9h Payslaongside P casual retro" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="e459113b-4788-400a-96de-bf746e5505db"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>with 
+a  as
+(select 
+a2.emplid, a2.job_no,  a2.paycode, a2.period_end_Date, a2.end_date,c2.workdate date_attributed, c2.hours_per_day, c2.hours_per_week
+,round(sum(a2.amt2 * (c2.hours_per_day_tot/ c2.hours_per_week)),2) expected_amt
+from  
+ (select a3.*, nvl(a3.AMT_PAID,a3.AMT) amt2_old, sum (nvl(a3.AMT_PAID,a3.AMT)) over (partition by emplid, job_no, paycode, period_end_Date) amt2 
+    from mb18.alesco_payslips_absences_clean a3 where  abs(amt)>0.03 and retro_ind='N'
+    --and  emplid='0822213' and (period_end_Date='22/sep/2012'  or end_date= '22/sep/2012' )
+   -- and paycode='LAUND'
+  
+    ) a2
+,(select * from  mb18.paycodes_tbl where pays_alongside='P' and source='ALESCO') b2 
+    ,(select emplid, job_no, expected_pay_end_Date,  workdate,  hours hours_per_day
+    ,sum(hours) over (partition by emplid, job_no,  expected_pay_end_Date) hours_per_week
+    ,sum(hours) over (partition by emplid, job_no,  workdate) hours_per_day_tot from mb18.ALESCO_PEPAYTRAN_CASUAL_CLEAN where hours&lt;>0
+    --and  emplid='114104' and expected_pay_end_Date='19/may/2012' 
+    ) c2
+    
+,(select * from mb18.alesco_occupancy_clean where casual_ind='Y' ) d2
+where a2.paycode=b2.paycode  
+and a2.emplid=c2.emplid(+) and a2.job_no=c2.job_no(+)  and a2.start_date=c2.EXPECTED_PAY_END_DATE(+)
+
+
+
+and a2.emplid=d2.emplid and a2.job_no=d2.job_no and a2.end_Date between d2.effdt_start and d2.extended_effdt_end
+and c2.hours_per_week&lt;>0
+--and a2.emplid='114104' 
+group by
+a2.emplid, a2.job_no,  a2.paycode, a2.period_end_Date,c2.workdate , c2.hours_per_day, c2.hours_per_week,a2.end_date
+)
+,b as
+(select p2.emplid, p2.job_no,  p2.paycode, p2.period_end_Date, p2.date_attributed , round(sum (p2.totaldollars),2) dest_amt
+from mb18.payslips_al p2, mb18.paycodes_tbl q2 where q2.pays_alongside='P' and q2.source='ALESCO' and p2.paycode=q2.paycode
+--and emplid= '0822213'  and p2.paycode='LAUND' and period_end_Date='22/sep/2012' 
+and end_date between period_start_date and period_end_Date
+group by  p2.emplid, p2.job_no,  p2.paycode, p2.period_end_Date, p2.date_attributed
+)
+
+select a.*, b.dest_amt
+from a,b
+where a.emplid=b.emplid(+) and  a.job_no=b.job_no(+) and a.paycode=b.paycode(+) and a.period_end_Date=b.period_end_Date(+) and a.date_attributed=b.date_attributed(+)
+and abs(a.expected_amt-nvl(dest_amt,0))>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 2" id="afaa6eae-b13b-450a-b4fe-0aed81985b03"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.alesco_payslips_absences_clean where emplid= '0822213'  and paycode='LAUND' and period_end_Date='22/sep/2012'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="Database Query 3" id="c9ca598b-9f79-4da5-8315-b1e88460b3ab"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from  mb18.payslips_al a where emplid= '0822213'  and paycode='LAUND' and period_end_Date='22/sep/2012'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="693bc15d-9a47-4301-bf6b-e68aac9bcd29" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST A basic RDP source test" searchProperties="true" timeout="0"><con:description> No rows = Pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="09af54eb-1860-4129-be7c-e7dd92273b20"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.pays_alongside, b.rdp_source, count(*)  from mb18.paycodes_tbl a
+,(select * from mb18.payslips_al where abs(totaldollars)>0.08) b
+where a.paycode=b.paycode and a.source='ALESCO'
+and
+case 
+when a.pays_alongside='P' and b.rdp_source in ('PAYS_ALONGSIDE TYPE P NON-CASUAL','PAYS_ALONGSIDE TYPE P CASUAL','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='D' and b.rdp_source in ('PAYS_ALONGSIDE TYPE D NON-RETRO','PAYS_ALONGSIDE TYPE D MATCHED LIKE P','PAYS_ALONGSIDE TYPE D RETRO','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='N' and b.rdp_source in ('NOT PAYS_ALONGSIDE') then 'ok'
+else 'maybe not ok' end
+&lt;>'ok'
+group by a.pays_alongside, b.rdp_source</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="ad2b4890-f54b-4475-9fc8-d1c9f966b471" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST B casual and non-casual" searchProperties="true" timeout="0"><con:description> No rows = Pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="444eab8a-8faf-41eb-a951-12f0f9c1f660"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.pays_alongside, b.rdp_source, count(*)  from mb18.paycodes_tbl a
+,(select * from mb18.payslips_al where abs(totaldollars)>0.08) b
+where a.paycode=b.paycode and a.source='ALESCO'
+and
+case 
+when a.pays_alongside='P' and b.rdp_source in ('PAYS_ALONGSIDE TYPE P NON-CASUAL','PAYS_ALONGSIDE TYPE P CASUAL','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='D' and b.rdp_source in ('PAYS_ALONGSIDE TYPE D NON-RETRO','PAYS_ALONGSIDE TYPE D MATCHED LIKE P','PAYS_ALONGSIDE TYPE D RETRO','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='N' and b.rdp_source in ('NOT PAYS_ALONGSIDE') then 'ok'
+else 'maybe not ok' end
+&lt;>'ok'
+group by a.pays_alongside, b.rdp_source</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="9c699903-255e-4ea0-8cff-8f9a35bdcec8" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST C retro and non-retro" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="8bdd30b9-5e5c-4356-af19-d6df2c6d3349"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select a.pays_alongside, b.rdp_source, count(*)  from mb18.paycodes_tbl a
+,(select * from mb18.payslips_al where abs(totaldollars)>0.08) b
+where a.paycode=b.paycode and a.source='ALESCO'
+and
+case 
+when a.pays_alongside='P' and b.rdp_source in ('PAYS_ALONGSIDE TYPE P NON-CASUAL','PAYS_ALONGSIDE TYPE P CASUAL','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='D' and b.rdp_source in ('PAYS_ALONGSIDE TYPE D NON-RETRO','PAYS_ALONGSIDE TYPE D MATCHED LIKE P','PAYS_ALONGSIDE TYPE D RETRO','UNMATCHED TYPE D OR P - SPLIT 5 OR 10') then 'ok'
+when a.pays_alongside='N' and b.rdp_source in ('NOT PAYS_ALONGSIDE') then 'ok'
+else 'maybe not ok' end
+&lt;>'ok'
+group by a.pays_alongside, b.rdp_source</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="97cfd0c6-7ea3-4e2a-b4f9-c065b08f7247" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST D - those that fail the D test" searchProperties="true" timeout="0"><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="a07b4d59-11e1-49fb-8b07-b185f444a678"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from 
+(select * from mb18.payslips_al where rdp_source in('PAYS_ALONGSIDE TYPE D MATCHED LIKE P')) a
+,(select emplid, job_no, paycode, expected_pay_end_Date, sum (unit) from mb18.ALESCO_PEPAYTRAN_HOURLY_CLEAN group by emplid, job_no, paycode, expected_pay_end_Date having sum(unit)&lt;>0
+) d
+where a.emplid=d.emplid and a.job_no=d.job_no and a.paycode=d.paycode and 
+case when date_attributed between a.period_start_date and a.period_end_Date then period_end_date else end_date end =d.EXPECTED_PAY_END_DATE
+and abs(totaldollars)>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="f44fbc92-72ea-45e7-a544-c81b23d17166" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST E1 - 5/10 that fail the D test" searchProperties="true" timeout="0"><con:description>no row = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="aec09297-b77a-44d6-a069-ea42512b223a"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from 
+(select x.* from mb18.payslips_al x, mb18.paycodes_tbl y where x.paycode=y.paycode and y.source='ALESCO' and pays_alongside='D' and rdp_source in('UNMATCHED TYPE D OR P - SPLIT 5 OR 10')) a
+,(select emplid, job_no, paycode, expected_pay_end_Date, sum (unit) from mb18.ALESCO_PEPAYTRAN_HOURLY_CLEAN group by emplid, job_no, paycode, expected_pay_end_Date having sum(unit)&lt;>0
+) d
+where a.emplid=d.emplid and a.job_no=d.job_no and a.paycode=d.paycode and 
+case when date_attributed between a.period_start_date and a.period_end_Date then period_end_date else end_date end =d.EXPECTED_PAY_END_DATE
+and abs(totaldollars)>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="789ed70a-7e75-4f83-afe9-a0c1cf938461" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST E2 - 5/10 that fail the P test, non-casuals" searchProperties="true" timeout="0"><con:description>no rows =pass, rows here suggest paysalongside cutups shoul;d be done against roster not 5/10;</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="4cb9c15b-d861-4fb6-ba92-9764d32d88cb"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from
+ 
+(select x.emplid, x.job_no, x.paycode,  case when x.date_attributed between x.period_start_date and x.period_end_Date then x.period_end_date else x.end_date end expected_ppe
+,sum (totaldollars) totaldollars
+from mb18.payslips_al x, mb18.paycodes_tbl y, mb18.alesco_occupancy_clean z
+where x.paycode=y.paycode and y.source='ALESCO' and pays_alongside='P' and x.rdp_source in('UNMATCHED TYPE D OR P - SPLIT 5 OR 10')
+and x.emplid=z.emplid and x.job_no=z.job_no and x.end_date between z.effdt_start and z.extended_effdt_end and z.casual_ind='N'
+group by x.emplid, x.job_no, x.paycode,  case when x.date_attributed between x.period_start_date and x.period_end_Date then period_end_date else end_date end
+having sum (totaldollars)&lt;>0
+) a
+
+,(select * from mb18.ALESCO_ROSTERED_HPD_CLEAN where CASUAL_ROSTER_YN = 'N' and hours_per_day&lt;>0) d
+
+where a.emplid=d.emplid and a.job_no=d.job_no and expected_ppe =d.EXPECTED_PAY_END_DATE
+and abs(totaldollars)>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="6589f294-537e-41c9-9fef-826a38ee81ec" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST E3 - 5/10 that fail the P test, casuals." searchProperties="true" timeout="0"><con:description>no rows =pass, where rows here then suggests paysalong side should be cutup as per paytran data, not a 5/10 split</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="bb6c6935-e30a-4160-b9f9-ea69ff88f5d7"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from
+(select x.emplid, x.job_no, x.paycode,  case when x.date_attributed between x.period_start_date and x.period_end_Date then x.period_end_date else x.end_date end expected_ppe
+,sum (totaldollars) totaldollars
+from mb18.payslips_al x, mb18.paycodes_tbl y, mb18.alesco_occupancy_clean z
+where x.paycode=y.paycode and y.source='ALESCO' and pays_alongside='P' and x.rdp_source in('UNMATCHED TYPE D OR P - SPLIT 5 OR 10')
+and x.emplid=z.emplid and x.job_no=z.job_no and x.end_date between z.effdt_start and z.extended_effdt_end and z.casual_ind='Y'
+group by x.emplid, x.job_no, x.paycode,  case when x.date_attributed between x.period_start_date and x.period_end_Date then period_end_date else end_date end
+having sum (totaldollars)&lt;>0
+) a
+,(select emplid, job_no, expected_pay_end_Date, sum (hours) from mb18.ALESCO_PEPAYTRAN_CASUAL_CLEAN group by emplid, job_no, expected_pay_end_Date having sum(hours)&lt;>0 ) d
+where a.emplid=d.emplid and a.job_no=d.job_no and a.expected_ppe =d.EXPECTED_PAY_END_DATE
+and abs(totaldollars)>0.08</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="21a5fc21-725b-4bb7-a6f9-26672cb88e10" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST F these are to be split manually on pay en date into 5/10 days" searchProperties="true" timeout="0"><con:description>code ran too slow, test will fail, list for FixMe</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="12a497f5-7558-492d-bc18-79266d474b29"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select * from mb18.payslips_al where rdp_source='UNMATCHED TYPE D OR P - SPLIT 5 OR 10' and date_attributed is not null</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:savedRecentRuns>1</con:savedRecentRuns><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:jmsConnectionContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest"><con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
 // This code is often used for adding custom authentication to SoapUI Pro tests
 
 // If hardcoding the token, uncomment and change line 5
