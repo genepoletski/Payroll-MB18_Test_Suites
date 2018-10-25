@@ -500,7 +500,421 @@ from mb18.alesco_payslips_absences_cl_3 a
 ,(select * from mb18.timesheets_al where rostered_net_hours&lt;>0) b
 where a.lv_unit='H' and a.start_date=a.end_date and a.booking_id is not null
 and a.emplid=b.emplid and a.start_date=b.start_date
-and round(duration_hours/rostered_net_hours,1) &lt;> duration_days</con:query><con:assertion type="XPath Match" name="Count of rows = 0" id="d85ee48f-0722-40b0-a43e-e113ad46c78b"><con:configuration><path>//Results[1]/ResultSet[1]/Row[1]/COUNT[1]/text()</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:savedRecentRuns>1</con:savedRecentRuns><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:jmsConnectionContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest"><con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
+and round(duration_hours/rostered_net_hours,1) &lt;> duration_days</con:query><con:assertion type="XPath Match" name="Count of rows = 0" id="d85ee48f-0722-40b0-a43e-e113ad46c78b"><con:configuration><path>//Results[1]/ResultSet[1]/Row[1]/COUNT[1]/text()</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite id="299d07a7-6a94-4729-be9a-92fae0d9262c" name="4030-98_MASTER_Employment_History"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="5781d5cf-5117-4767-a297-02a4e98ed917" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="Test 1 Checking that keys in occupancy_clean have reached emp_hist_pre_stg" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="3106f1c6-b239-46ee-a588-db8bc653cece"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT emplid, effdt_start, effdt_end   FROM (SELECT *           FROM mb18.alesco_occupancy_clean) MINUS SELECT emplid, effdt_start, effdt_end   FROM (SELECT *           FROM mb18.employment_history_pre_stg          WHERE SOURCE = 'ALESCO')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="4535b577-238d-45f4-b03c-7751781eeafb" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 2-check that no new rows appear in pre staging" searchProperties="true" timeout="0"><con:description>No rows = Pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="e6d3325d-43e2-4325-b5aa-bbe1ad5a7298"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT emplid, effdt_start
+  FROM (SELECT *
+          FROM mb18.employment_history_pre_stg
+         WHERE SOURCE = 'ALESCO')
+MINUS
+SELECT emplid, effdt_start
+  FROM (SELECT *
+          FROM mb18.alesco_occupancy_clean)</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="11fe5945-b6ba-4bdc-9433-a8678e1a5f3c"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="819eb274-4a18-41a1-9499-2ef76d2ee78c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 3-Check that std_days_per_week is populated for all rows" searchProperties="true" timeout="0"><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="24b9ba7d-e26b-4d6f-af9b-511ac4680bd0"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT * FROM mb18.employment_history_pre_stg
+   WHERE SOURCE = 'ALESCO' AND std_days_per_week IS NULL
+ORDER BY emplid, job_no, effdt_start</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="7b629468-dc72-4053-b27f-a669caac7a24"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="f664afff-015f-435c-a3d5-f17745d4d53b" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Test 4-Checking that keys in emp_hist_pre_stg have reached emp_hist_stg" searchProperties="true" timeout="0"><con:description>Cannot use end_date as new rows have been added eg for overtime, (no rows = pass);</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="01b5bb6c-4c43-4b1b-afac-992115a0a7a5"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT emplid, effdt_start
+  FROM (SELECT *
+          FROM mb18.employment_history_pre_stg
+         WHERE SOURCE = 'ALESCO')
+MINUS
+SELECT emplid, effdt_start
+  FROM (SELECT *
+          FROM mb18.employment_history_stg
+         WHERE SOURCE = 'ALESCO')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="a0f3be58-7023-474e-a0ec-c7e46a3d9664"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="925492fb-49da-4d50-ba22-9a79f949dfc0" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 5-Check that all payslip period end dates are between effdt and extended effdt" searchProperties="true" timeout="0"><con:description>zero rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="77f79578-8935-4eed-90ff-e95012018139"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT DISTINCT a.emplid, period_end_date
+           FROM mb18.payslips_al a,
+                (SELECT *
+                   FROM mb18.employment_history_stg) b
+          WHERE a.emplid = b.emplid
+            AND a.period_end_date BETWEEN NVL (b.effdt_start, '01-jan-1900')
+                                      AND NVL (b.extended_effdt_end,
+                                               '01-jan-1900'
+                                              )
+            AND b.emplid IS NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="cd3a917b-a148-4a22-88dc-5f191e5e614b"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="cfc77a57-ab14-4398-b964-596e489dd439" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 6-Check that all timesheets end dates are between effdt and extended effdt" searchProperties="true" timeout="0"><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="b375eb4f-5b9a-442f-a1af-4810cf655d20"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT DISTINCT a.emplid, workdate
+           FROM mb18.timesheets_al a,
+                (SELECT *
+                   FROM mb18.employment_history_stg) b
+          WHERE a.emplid = b.emplid
+            AND a.workdate BETWEEN NVL (b.effdt_start, '01-jan-1900')
+                               AND NVL (b.extended_effdt_end, '01-jan-1900')
+            AND b.emplid IS NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="af3a4468-fd96-4d9a-861f-e26f0910ce43"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="9d227256-af6f-47d8-a861-16efd1ba1ec1" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 7-Overlaps in pre_staging" searchProperties="true" timeout="0"><con:description>No rows = Pass;</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="4016e051-3317-4f3b-a62a-21c618df2b7d"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT   a.emplid, a.job_no, a.effdt_start, a.effdt_end, a.company,
+         a.paygroup, b.effdt_start, b.effdt_end, b.company, b.paygroup,
+         CASE
+            WHEN a.emplid = '227196'
+               THEN 'Known'
+            ELSE NULL
+         END notes
+    FROM mb18.employment_history_pre_stg a, mb18.employment_history_pre_stg b
+   WHERE a.emplid = b.emplid
+     AND a.job_no = b.job_no
+     AND a.SOURCE = 'ALESCO'
+     AND a.effdt_start BETWEEN b.effdt_start AND b.effdt_end
+     AND a.effdt_start &lt;> b.effdt_start
+ORDER BY a.emplid, a.effdt_start</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="46af8361-873e-43af-850c-a8c787db1fa6"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="acb90fba-270e-4d7c-9b81-0477a4c7214b" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TEST 8-Overlaps in staging" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="0143b3d8-19c5-4904-adcd-75cb6891dab2"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT   a.emplid, a.job_no, a.effdt_start, a.effdt_end, a.company,
+         a.paygroup, b.effdt_start, b.effdt_end, b.company, b.paygroup,
+         CASE
+            WHEN a.emplid = '227196'
+               THEN 'Known'
+            ELSE NULL
+         END notes
+    FROM mb18.employment_history_stg a, mb18.employment_history_stg b
+   WHERE a.emplid = b.emplid
+     AND a.job_no = b.job_no
+     AND a.SOURCE = 'ALESCO'
+     AND a.effdt_start BETWEEN b.effdt_start AND b.effdt_end
+     AND a.effdt_start &lt;> b.effdt_start
+ORDER BY a.emplid, a.effdt_start</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="39bd2e00-fd39-453e-a780-1c6f2dd246e4"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="9908c6cd-4bab-44f7-a22a-a69922d1bcfd" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="TEST 9-staging check that all employees have an 'A' record" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description>No rows = Pass;</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query 1" id="fe5cc999-7620-47aa-a12b-30ad8cc61fd3"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT DISTINCT emplid, period_of_employment, SOURCE
+           FROM mb18.employment_history_stg eh
+          WHERE 1 = 1
+            AND emplid IN (
+                   WITH all_emps AS
+                        (SELECT DISTINCT emplid, SOURCE
+                                    FROM mb18.employment_history_stg eh
+                                   WHERE eh.SOURCE IN ('PSOFT', 'ALESCO')),
+                        poe_a AS
+                        (SELECT DISTINCT emplid, SOURCE
+                                    FROM mb18.employment_history_stg eh
+                                   WHERE 1 = 1
+                                     AND eh.period_of_employment LIKE 'A%')
+                   SELECT t1.emplid
+                     FROM all_emps t1 LEFT OUTER JOIN poe_a t2
+                          ON t1.emplid = t2.emplid
+                    WHERE t2.emplid IS NULL)
+            AND emplid NOT IN
+                      ('0810725', '0825398', '1003174')</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="7dceb055-e012-417f-a007-75bdb3f631ab"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="49d13c32-e190-457d-89a6-aa2fcf10684c" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 10-Staging check that all casual employees have a %1 period of employment" searchProperties="true" timeout="0"><con:description>No rows = Pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="b9126ce4-2722-4f80-8569-b3029dfc68d7"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT * FROM mb18.employment_history_stg eh
+   WHERE SOURCE = 'ALESCO'
+     AND eh.casual_ind = 'Y'
+     AND period_of_employment LIKE '%0'
+ORDER BY emplid</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="45069da4-34b5-447a-ad34-bb1f9b7f02ff"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="5a52307f-c094-4426-9b78-02eb5c187764" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 11-staging check that alpha changes are legitimate" searchProperties="true" timeout="0"><con:description>some have notes, blanks will appear at the top so if the first row has a note then they are all fine</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="d871c3a7-3746-49b9-bc77-26ded070bbb6"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>WITH alpha_brks AS
+     (SELECT   emplid, SUBSTR (period_of_employment, 1, 1) poe,
+               MAX (eh.effdt_end) enddt, MIN (eh.effdt_start) startdt,
+               eh.split_reason
+          FROM mb18.employment_history_stg eh
+         WHERE SOURCE = 'ALESCO'
+      GROUP BY emplid, SUBSTR (period_of_employment, 1, 1), split_reason
+      ORDER BY 1, 2, 3)
+SELECT   emplid, poe, nxt_poe, enddt, nxt_startdt, diff, split_reason,
+         CASE
+            WHEN emplid = '0808215'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0834721'
+               THEN 'OK - redundancy'
+            WHEN emplid = '783542'
+               THEN 'OK - redundancy'
+            WHEN emplid = '762951'
+               THEN 'OK - redundancy'
+            WHEN emplid = '303751'
+               THEN 'OK - redundancy'
+            WHEN emplid = '105250'
+               THEN 'OK - redundancy'
+            WHEN emplid = '785810'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0825684'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0809724'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0828319'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0831096'
+               THEN 'OK - rehire gap 43 days'
+            WHEN emplid = '0831310'
+               THEN 'OK - rehire gap 46 days'
+            WHEN emplid = '0831435'
+               THEN 'OK - redundancy'
+            WHEN emplid = '0834123'
+               THEN 'OK - rehire gap 95 days'
+            WHEN emplid = '0834513'
+               THEN 'OK - rehire gap 41 days'
+            WHEN emplid = '0835745'
+               THEN 'OK - rehire gap 15 days'
+            WHEN emplid = '1000371'
+               THEN 'OK - rehire gap 21 days'
+            WHEN emplid = '1002676'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1003157'
+               THEN 'OK - rehire gap 43 days'
+            WHEN emplid = '1003962'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1004581'
+               THEN 'OK - rehire gap 22 days'
+            WHEN emplid = '1004595'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1004596'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1004601'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1004624'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '1004682'
+               THEN 'OK - rehire gap 14 days'
+            WHEN emplid = '207417'
+               THEN 'OK - redundancy'
+            ELSE NULL
+         END notes
+    FROM (SELECT emplid, poe, LEAD (poe) OVER (ORDER BY emplid, poe) nxt_poe,
+                 LEAD (emplid) OVER (ORDER BY emplid, poe) nxt_emplid, enddt,
+                 LEAD (startdt) OVER (ORDER BY emplid, poe) nxt_startdt,
+                 LEAD (startdt) OVER (ORDER BY emplid, poe) - enddt diff,
+                 LEAD (split_reason) OVER (ORDER BY emplid, poe) split_reason
+            FROM alpha_brks)
+   WHERE emplid = nxt_emplid
+     AND poe &lt;> nxt_poe
+     AND diff &lt; 8
+     AND split_reason NOT LIKE '%AL PAYOUT EXISTS%'
+ORDER BY notes DESC</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="d7720d60-5899-4b27-ba25-2fa7f7a6aee3"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="968caaa6-b7bf-4aaf-a4a4-803d86b4f58f" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 12-staging check that numeric changes are due to OT or to/from casual" searchProperties="true" timeout="0"><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="6972b41d-5334-4b81-9e48-6810140dbb01"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>WITH alpha_brks AS
+     (SELECT   emplid, SUBSTR (period_of_employment, 1, 2) poe,
+               MAX (eh.effdt_end) enddt, MIN (eh.effdt_start) startdt,
+               eh.split_reason, eh.casual_ind, action
+          FROM mb18.employment_history_stg eh
+         WHERE SOURCE = 'ALESCO'
+      GROUP BY emplid,
+               SUBSTR (period_of_employment, 1, 2),
+               split_reason,
+               casual_ind,
+               action
+      ORDER BY 1, 2, 3)
+SELECT emplid, poe, nxt_poe, enddt, nxt_startdt, casual_ind, nxt_casual_ind,
+       action, nxt_action, split_reason, nxt_split_reason
+  FROM (SELECT emplid, poe, LEAD (poe) OVER (ORDER BY emplid, poe) nxt_poe,
+               LEAD (emplid) OVER (ORDER BY emplid, poe) nxt_emplid, enddt,
+               LEAD (startdt) OVER (ORDER BY emplid, poe) nxt_startdt,
+               LEAD (startdt) OVER (ORDER BY emplid, poe) - enddt diff,
+               casual_ind,
+               LEAD (casual_ind) OVER (ORDER BY emplid, poe) nxt_casual_ind,
+               split_reason,
+               LEAD (split_reason) OVER (ORDER BY emplid,
+                poe) nxt_split_reason, action,
+               LEAD (action) OVER (ORDER BY emplid, poe) nxt_action
+          FROM alpha_brks)
+ WHERE emplid = nxt_emplid
+   AND poe &lt;> nxt_poe
+   and emplid not in ('0834345', '0828715')
+   AND SUBSTR (nxt_poe, 2, 1) = '1'
+   AND SUBSTR (poe, 2, 1) = '1'
+   AND nxt_split_reason NOT LIKE '%OT EXISTS%'
+   AND casual_ind &lt;> 'Y'
+   AND nxt_casual_ind &lt;> 'Y'</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="72c8823a-8afa-4334-bd8c-a80fc7fd09c4"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="9b2abf67-b755-4f53-a7f5-75179d41d814" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 13-make sure there are no null extended end dates" searchProperties="true" timeout="0"><con:description>no rows = pass</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="ee15bdeb-34ad-46a0-8e93-66a1d81bfd90"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT *
+  FROM mb18.employment_history_stg
+ WHERE extended_effdt_end IS NULL</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="d89a720f-9c22-4979-a5f2-7585ccf4302f"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase id="494db54c-5d3c-4019-ab85-8f3ed56e8336" discardOkResults="true" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="TEST 14-make sure there are no extended end dates prior to effective start date" searchProperties="true" timeout="0"><con:description>where effective end date is after effective start date</con:description><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="Database Query" id="24cf6f9a-cf22-48e7-8e10-e5b466293e24"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>SELECT *
+  FROM mb18.employment_history_stg
+ WHERE effdt_start &lt; effdt_end AND extended_effdt_end &lt; effdt_start</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="66a39092-6d26-4b20-80a7-63ff72a22976"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite id="1036e25e-0124-40b1-a943-2bbfd8e93d70" name="4030-99-ALESCO row counts for PAN form PANCAKE"><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:runType>SEQUENTIAL</con:runType><con:testCase id="724fcb06-6ee6-4aaa-852e-2fe27e469d02" discardOkResults="true" failOnError="false" failTestCaseOnErrors="true" keepSession="false" name="4030-99 Tests" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:description/><con:settings/><con:savedRecentRuns>1</con:savedRecentRuns><con:testStep type="jdbc" name="PERSON" id="c3195c5a-def5-4e97-9cb5-df577ab466a9"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select expected_result, count(*) from (
+select
+case 
+when b.emplid is null then 'New Row' -- emp in pre-pan is not in pan it's a new row 
+when b.emplid is not null and a.EMPLID=b.EMPLID -- emplid exists in both, check if data the same to see if it's changed or not. 
+    
+and nvl(a.SURNAME,'xyz') = nvl (b.SURNAME,'xyz') 
+and nvl(a.FIRST_NAMES,'xyz') = nvl (b.FIRST_NAMES,'xyz') 
+and nvl(a.PREFERRED_NAME,'xyz') = nvl (b.PREFERRED_NAME,'xyz') 
+and nvl(a.DATE_OF_BIRTH,'16-sep-1868') = nvl (b.DATE_OF_BIRTH,'16-sep-1868') 
+and nvl(a.MOBILE_PHONE,'xyz') = nvl (b.MOBILE_PHONE,'xyz') 
+and nvl(a.GENDER,'xyz') = nvl (b.GENDER,'xyz') 
+and nvl(a.TITLE,'xyz') = nvl (b.TITLE,'xyz') 
+and nvl(a.IRD_NUMBER,'xyz') = nvl (b.IRD_NUMBER,'xyz') 
+and nvl(a.HIRE_DATE,'16-sep-1868') = nvl (b.HIRE_DATE,'16-sep-1868') 
+and nvl(a.TERMINATION_DATE,'16-sep-1868') = nvl (b.TERMINATION_DATE,'16-sep-1868') 
+and nvl(a.TERMINATION_REASON_DESC,'xyz') = nvl (b.TERMINATION_REASON_DESC,'xyz') 
+
+and  case when a.TERMINATION_REASON_DESC='Death' then 'x' else nvl(a.BANK_ACCOUNT,'x') end = case when b.TERMINATION_REASON_DESC='Death' then 'x' else nvl(b.BANK_ACCOUNT,'x') end
+
+and nvl(a.BANK_ACCOUNT_NAME,'xyz') = nvl (b.BANK_ACCOUNT_NAME,'xyz') 
+and nvl(a.PERSONAL_EMAIL,'xyz') = nvl (b.PERSONAL_EMAIL,'xyz') 
+and nvl(a.SUBTRACT_OVERPAYMENT,'xyz') = nvl (b.SUBTRACT_OVERPAYMENT,'xyz') 
+and nvl(a.STATUS_LATEST,'xyz') = nvl (b.STATUS_LATEST,'xyz') 
+and nvl(a.STATUS_UPDATED_ON,'16-sep-1868') = nvl (b.STATUS_UPDATED_ON,'16-sep-1868') 
+and nvl(a.HOME_PHONE,'xyz') = nvl (b.HOME_PHONE,'xyz') 
+and nvl(a.OTHER_PHONE,'xyz') = nvl (b.OTHER_PHONE,'xyz') 
+and nvl(a.PERSON_NOTES,'xyz') = nvl (b.PERSON_NOTES,'xyz') 
+and nvl(a.INCLUDE_CLAIMANT,'xyz') = nvl (b.INCLUDE_CLAIMANT,'xyz') 
+and nvl(a.EMP_REFERENCE,'xyz') = nvl (b.EMP_REFERENCE,'xyz') 
+     
+    then 'Unchanged'
+else 'Changed'        
+end expected_result
+
+,a.*, b.*
+
+from 
+(select * from mb18.person_al         ) a
+, (select * from mb18.person )b
+,(select emplid, max (nvl (termination_date,to_date('31-dec-2049','dd-mon-yyyy'))) termination_date, count(*) counter from   mb18.person_al a group by emplid) c
+where a.emplid=b.emplid(+)
+and a.emplid=c.emplid 
+and nvl (a.termination_date,to_date('31-dec-2049','dd-mon-yyyy'))=c.termination_date
+
+and case when b.emplid is null or a.emplid=a.orig_emplid or c.counter=1 then 'in' else 'out' end = 'in' --special case for preson table as not all rows go from pre-pan to pan 
+--and a.emplid='0801249'
+) group by expected_result</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="ADDR_ORIG" id="725ea22f-57db-4e2b-982c-f13ee9567e1f"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select expected_result, count(*) from 
+(
+select
+case 
+when b.emplid is null then 'New Row' -- emp in pre-pan is not in pan it's a new row 
+when b.emplid is not null and a.EMPLID=b.EMPLID -- emplid exists in both, check if data the same to see if it's changed or not. 
+    
+and nvl(a.HOME_ADDRESS1,'xyz') = nvl (b.HOME_ADDRESS1,'xyz') 
+and nvl(a.HOME_ADDRESS2,'xyz') = nvl (b.HOME_ADDRESS2,'xyz') 
+and nvl(a.HOME_ADDRESS3,'xyz') = nvl (b.HOME_ADDRESS3,'xyz') 
+and nvl(a.HOME_ADDRESS4,'xyz') = nvl (b.HOME_ADDRESS4,'xyz') 
+and nvl(a.HOME_POSTCODE,'xyz') = nvl (b.HOME_POSTCODE,'xyz') 
+and nvl(a.MAIL_ADDRESS1,'xyz') = nvl (b.MAIL_ADDRESS1,'xyz') 
+and nvl(a.MAIL_ADDRESS2,'xyz') = nvl (b.MAIL_ADDRESS2,'xyz') 
+and nvl(a.MAIL_ADDRESS3,'xyz') = nvl (b.MAIL_ADDRESS3,'xyz') 
+and nvl(a.MAIL_ADDRESS4,'xyz') = nvl (b.MAIL_ADDRESS4,'xyz') 
+and nvl(a.MAIL_POSTCODE,'xyz') = nvl (b.MAIL_POSTCODE,'xyz') 
+
+     
+    then 'Unchanged'
+else 'Changed'        
+end expected_result
+
+,a.*, b.*
+from 
+(select * from mb18.PERSON_ADDRESS_ORIG_al) a
+, mb18.PERSON_ADDRESS_ORIG b
+,mb18.person_al c
+
+where a.emplid=b.emplid(+)
+
+and a.emplid=c.emplid(+)
+
+and case when b.emplid is null or a.emplid=a.emplid then 'in' else 'out' end = 'in' --special case for preson table as not all rows go from pre-pan to pan 
+--and a.emplid='P103278'
+
+)
+group by expected_result</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="ABSENCES" id="406553bf-832b-4d77-a563-c8432218b5bc"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select expected_result, count(*) from
+(
+select
+
+case 
+when b.EMPLID is null then 'New Row' -- keys not in pancake 
+when b.edited_date_time is not null then 'Unchanged due to edit'
+
+when b.EMPLID is not null 
+and a.EMPLID=b.EMPLID 
+and a.job_no=b.job_no 
+and a.sequence =b.sequence 
+and a.start_date=b.start_date 
+and a.end_date=b.end_date 
+and a.ABSENCE_CODE=b.ABSENCE_CODE
+and a.expected_pay_end_date=b.expected_pay_end_Date 
+
+    
+and nvl(a.EMPLID,'xyz') = nvl (b.EMPLID,'xyz') 
+and nvl(a.JOB_NO,'xyz') = nvl (b.JOB_NO,'xyz') 
+and nvl(a.SEQUENCE,-999) = nvl (b.SEQUENCE,-999) 
+and nvl(a.ABSENCE_CODE,'xyz') = nvl (b.ABSENCE_CODE,'xyz') 
+and nvl(a.ABSENCE_ID,-999) = nvl (b.ABSENCE_ID,-999) 
+and nvl(a.START_DATE,'16-sep-1868') = nvl (b.START_DATE,'16-sep-1868') 
+and nvl(a.END_DATE,'16-sep-1868') = nvl (b.END_DATE,'16-sep-1868') 
+and nvl(a.DURATION_DAYS,-999) = nvl (b.DURATION_DAYS,-999) 
+and nvl(a.DURATION_HOURS,-999) = nvl (b.DURATION_HOURS,-999) 
+and nvl(a.REVERSED_YN,'xyz') = nvl (b.REVERSED_YN,'xyz') 
+--and nvl(a.PAYSLIP_LINK,'xyz') = nvl (b.PAYSLIP_LINK,'xyz') 
+and nvl(a.EXPECTED_PAY_START_DATE,'16-sep-1868') = nvl (b.EXPECTED_PAY_START_DATE,'16-sep-1868') 
+and nvl(a.EXPECTED_PAY_END_DATE,'16-sep-1868') = nvl (b.EXPECTED_PAY_END_DATE,'16-sep-1868') 
+and nvl(a.DURATION_DAYS_PER_PPE,-999) = nvl (b.DURATION_DAYS_PER_PPE,-999) 
+and nvl(a.DURATION_HOURS_PER_PPE,-999) = nvl (b.DURATION_HOURS_PER_PPE,-999) 
+and nvl(a.USE_4_OR_52,-999) = nvl (b.USE_4_OR_52,-999) 
+--and nvl(a.PAYSLIP_ID,-999) = nvl (b.PAYSLIP_ID,-999) -- commented out 3 Feb SW 
+
+     
+    then 'Unchanged'
+else 'Changed'        
+end expected_result
+
+,a.*, b.*
+from 
+(select * from mb18.EMP_ABSENCES_al) a
+, (select * from mb18.EMP_ABSENCES) b
+
+where 
+a.EMPLID=b.EMPLID(+) 
+and a.job_no=b.job_no(+) 
+and a.sequence =b.sequence(+) 
+and a.start_date=b.start_date(+)
+and a.end_date=b.end_date(+)
+and a.ABSENCE_CODE=b.ABSENCE_CODE(+)
+and a.expected_pay_end_date=b.expected_pay_end_Date(+) 
+)
+
+group by expected_result</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="e3642c4d-f392-4aef-8bc4-1cbd9c94d309"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="TIMESHEETS" id="e18e5379-683c-4c7f-b590-5ca622b56f27"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select expected_result, count(*) from 
+
+(
+select
+case 
+when b.EMPLID is null then 'New Row' -- keys not in pancake 
+when b.edited_date_time is not null then 'Unchanged due to edit'
+when b.EMPLID is not null and a.EMPLID=b.EMPLID and a.workdate =b.workdate and a.work_type=b.work_type --and a.start_date=b.end_date and a.end_date=b.end_date
+    
+and nvl(a.EMPLID,'xyz') = nvl (b.EMPLID,'xyz') 
+and nvl(a.WORKDATE,'16-sep-1868') = nvl (b.WORKDATE,'16-sep-1868') 
+--and nvl(a.START_DATE,'16-sep-1868') = nvl (b.START_DATE,'16-sep-1868') 
+--and nvl(a.END_DATE,'16-sep-1868') = nvl (b.END_DATE,'16-sep-1868') 
+--and nvl(a.PERIOD_IND,'xyz') = nvl (b.PERIOD_IND,'xyz') 
+--and nvl(a.START_DATE_TIME_ACTUAL,'16-sep-1868') = nvl (b.START_DATE_TIME_ACTUAL,'16-sep-1868') 
+--and nvl(a.END_DATE_TIME_ACTUAL,'16-sep-1868') = nvl (b.END_DATE_TIME_ACTUAL,'16-sep-1868') 
+and nvl(a.WORK_TYPE,'xyz') = nvl (b.WORK_TYPE,'xyz') 
+--and nvl(a.ROSTER_CODE,'xyz') = nvl (b.ROSTER_CODE,'xyz') 
+--and nvl(a.START_DATE_TIME_ROSTER,'16-sep-1868') = nvl (b.START_DATE_TIME_ROSTER,'16-sep-1868') 
+--and nvl(a.END_DATE_TIME_ROSTER,'16-sep-1868') = nvl (b.END_DATE_TIME_ROSTER,'16-sep-1868') 
+and nvl(a.ROSTERED_NET_HOURS,-999) = nvl (b.ROSTERED_NET_HOURS,-999) 
+and nvl(a.ACTUAL_NET_HOURS,-999) = nvl (b.ACTUAL_NET_HOURS,-999) 
+and nvl(a.DAYS_PAID,-999) = nvl (b.DAYS_PAID,-999) 
+     
+    then 'Unchanged'
+else 'Changed'        
+end expected_result
+
+,a.*, b.*
+from 
+(select * from mb18.timesheets_al) a
+, mb18.timesheets b
+
+where 
+a.EMPLID=b.EMPLID(+) and a.workdate =b.workdate(+) and a.work_type=b.work_type(+) --and a.start_date=b.end_date(+) and a.end_date=b.end_date(+)
+
+
+)
+
+group by expected_result</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:testStep type="jdbc" name="EMPHIST" id="126ea0bb-e457-45b0-ad88-24dbe0b708a2"><con:settings><con:setting id="prettyPrintResponse">true</con:setting></con:settings><con:config xsi:type="con:JdbcRequestTestStep" convertColumnNamesToUpperCase="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:dbConnectionName>EDWDVP_MB18</con:dbConnectionName><con:driver>oracle.jdbc.driver.OracleDriver</con:driver><con:connectionString>jdbc:oracle:thin:MB18_READONLY/PASS_VALUE@DB_DVP_EDW.NZPOST.CO.NZ:1781:EDWDVP</con:connectionString><con:password>r2SL24#1kV5S</con:password><con:connectionProperties/><con:query>select expected_result, count(*) from 
+(
+select
+case 
+when b.emplid is null then 'New Row' -- emp in pre-pan is not in pan it's a new row
+when b.edited_date_time is not null then 'Unchanged due to edit' 
+when b.emplid is not null and a.EMPLID=b.EMPLID and a.EFFDT_START=b.EFFDT_START and a.JOB_NO=b.JOB_NO and a.COMPANY=b.COMPANY and a.PAYGROUP=b.PAYGROUP and a.EFFSEQ=b.EFFSEQ
+    
+and nvl(a.EFFDT_START,'16-sep-1868') = nvl (b.EFFDT_START,'16-sep-1868') 
+and nvl(a.EFFDT_END,'16-sep-1868') = nvl (b.EFFDT_END,'16-sep-1868') 
+and nvl(a.EXTENDED_EFFDT_END,'16-sep-1868') = nvl (b.EXTENDED_EFFDT_END,'16-sep-1868') 
+and nvl(a.EFFSEQ,-999) = nvl (b.EFFSEQ,-999) 
+and nvl(a.JOB_NO,'xyz') = nvl (b.JOB_NO,'xyz') 
+and nvl(a.ACTION,'xyz') = nvl (b.ACTION,'xyz') 
+and nvl(a.COMPANY,'xyz') = nvl (b.COMPANY,'xyz') 
+and nvl(a.PAYGROUP,'xyz') = nvl (b.PAYGROUP,'xyz') 
+and nvl(a.FTE,-999) = nvl (b.FTE,-999) 
+and nvl(a.STD_HOURS,-999) = nvl (b.STD_HOURS,-999) 
+and nvl(a.RATE_HOUR,-999) = nvl (b.RATE_HOUR,-999) 
+and nvl(a.RATE_YEAR,-999) = nvl (b.RATE_YEAR,-999) 
+and nvl(a.STD_DAYS_PER_WEEK,-999) = nvl (b.STD_DAYS_PER_WEEK,-999) 
+and nvl(a.PERIOD_OF_EMPLOYMENT,'xyz') = nvl (b.PERIOD_OF_EMPLOYMENT,'xyz') 
+and nvl(a.ROSTER_CODE,'xyz') = nvl (b.ROSTER_CODE,'xyz') 
+and nvl(a.PERM_TEMP_CAS_STATUS,'xyz') = nvl (b.PERM_TEMP_CAS_STATUS,'xyz') 
+and nvl(a.SPLIT_REASON,'xyz') = nvl (b.SPLIT_REASON,'xyz') 
+--and nvl(a.DW_INSERT_AUDIT_ID,-999) = nvl (b.DW_INSERT_AUDIT_ID,-999) 
+--and nvl(a.DW_UPDATE_AUDIT_ID,-999) = nvl (b.DW_UPDATE_AUDIT_ID,-999) 
+--and nvl(a.DW_MODIFIED_DATE,'16-sep-1868') = nvl (b.DW_MODIFIED_DATE,'16-sep-1868')
+--and nvl(a.RDP_SOURCE,'xyz') = nvl (b.RDP_SOURCE,'xyz') 
+and nvl(a.CASUAL_IND,'xyz') = nvl (b.CASUAL_IND,'xyz') 
+    then 'Unchanged'
+    else 'Changed'        
+end expected_result
+
+,a.*, b.*
+from 
+(select * from mb18.employment_history_stg) a
+, (select * from mb18.employment_history) b
+
+where 
+a.EMPLID=b.EMPLID(+) and a.EFFDT_START=b.EFFDT_START(+) and a.JOB_NO=b.JOB_NO(+) and a.COMPANY=b.COMPANY(+) and a.PAYGROUP=b.PAYGROUP(+) and a.EFFSEQ=b.EFFSEQ(+)
+)
+group by expected_result</con:query><con:assertion type="Simple NotContains" name="Fails if the response contains any rows (expected 0 rows)" id="9164184e-a17c-465a-bff2-9fe8d2a05a15"><con:configuration><token>&lt;/Row></token><ignoreCase>true</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:properties/></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:savedRecentRuns>1</con:savedRecentRuns><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:jmsConnectionContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest"><con:script>// Sample event script to add custom HTTP header to all outgoing REST, SOAP and HTTP(S) calls
 // This code is often used for adding custom authentication to SoapUI Pro tests
 
 // If hardcoding the token, uncomment and change line 5
